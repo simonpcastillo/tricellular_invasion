@@ -1,12 +1,8 @@
 # bin2cell segmentation replacement pipeline
 # Install with: pip install -r requirements.txt
 #
-# utilsfx is a local folder, not a PyPI package.
-# Make sure it is importable by adding its parent directory to PYTHONPATH:
-#   export PYTHONPATH=/path/to/folder/containing/utilsfx:$PYTHONPATH
-#
 # bin2cell may not be on PyPI — install from GitHub if needed:
-#   pip install git+https://github.com/BIMSBbioinfo/bin2cell.git
+# pip install git+https://github.com/BIMSBbioinfo/bin2cell.git
  
 numpy
 pandas
