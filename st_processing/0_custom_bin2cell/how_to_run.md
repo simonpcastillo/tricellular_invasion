@@ -6,7 +6,7 @@ Run the pipeline using:
 python run_bin2cell_customseg.py \
     --spaceranger-root /st/spaceranger_outs \
     --geojson-root /st/segmentation_files \
-    --outdir /st/bin2cell_updated2 \
+    --outdir /st/bin2cell \
     --skip-existing \
     --tile-size 300 \
     --tile-overlap 20
