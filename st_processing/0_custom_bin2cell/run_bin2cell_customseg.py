@@ -2,32 +2,6 @@
 """
 bin2cell segmentation replacement pipeline  (batch mode)
 =========================================================
-Loops over every sample directory found under ``--spaceranger-root`` and
-runs the full bin2cell pipeline for each one.
-
-Expected directory layout
---------------------------
-    <spaceranger-root>/
-        <sample-name>/
-            sr_wsi.tif                          ← whole-slide image
-            binned_outputs/square_002um/
-                spatial/
-
-    <geojson-root>/
-        <sample-name>_pgcc_cellvit_multiclass_seg.geojson
-
-The GeoJSON filename is: ``<sample-name> + --geojson-suffix``.
-
-Usage
------
-    python run_bin2cell.py --help
-    python run_bin2cell.py \\
-        --spaceranger-root /path/to/spaceranger_outs \\
-        --geojson-root     /path/to/cellvitpp_outputs \\
-        --outdir           /path/to/bin2cell_updated2
-
-Optional per-sample override (runs a single sample instead of all)
-    python run_bin2cell.py ... --sample 241512-HD01
 """
 
 import argparse
