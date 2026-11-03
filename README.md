@@ -14,7 +14,10 @@ tricellular_invasion/
 │   │
 │   ├── 0_custom_bin2cell/              2 µm bins → cells, using externally supplied
 │   │   ├── run_bin2cell_customseg.py   QuPath/InstanSeg segmentation instead of
-│   │   ├── requirements.txt            bin2cell's built-in StarDist step
+│   │   ├── utilsfx/                    bin2cell's built-in StarDist step
+│   │   │   ├── gjson_to_npz.py         GeoJSON polygons → sparse label mask
+│   │   │   └── morphology.py           per-cell area, circularity, solidity
+│   │   ├── requirements.txt
 │   │   └── how_to_run.md
 │   │
 │   ├── 1_b2c_r_qc/                     bin2cell output → per-sample Seurat objects,
@@ -60,8 +63,12 @@ tricellular_invasion/
 │       └── README.md
 │
 ├── bulk_rnaseq/                        bulk RNA-seq of region-sorted endothelium
-│   └── 1_bulkRNAseq.R                  region signatures, leave-one-mouse-out
-│                                       classifier, GO/GSEA, paper figures
+│   ├── scripts/
+│   │   └── 01_bulk_region_signatures.R   region signatures, leave-one-mouse-out
+│   │                                     classifier, GO/GSEA, paper figures
+│   ├── config/config.R                 region classes, thresholds, GO settings
+│   ├── run.sh                          check | run
+│   └── README.md
 │
 ├── if_processing/                      immunofluorescence quantification
 │   └── bulk_margin_segmentation/       (to be added)
@@ -77,8 +84,8 @@ The spatial pipeline runs in order: `0 → 1 → 2 → 3`, with `4` taking input
 
 Each module directory carries its own README (or `how_to_run.md` for stage 0) with the inputs it
 expects, the parameters it exposes, the outputs it writes, and the caveats that apply to them.
-Stages `3_pvn` and `4_liana` are configured through `config/config.R` and validated with
-`check_inputs.R` before running.
+Stages `3_pvn`, `4_liana` and `bulk_rnaseq` are configured through `config/config.R`; run their
+preflight (`check_inputs.R`, or `bash run.sh check`) before the analysis itself.
 
 ## Requirements
 

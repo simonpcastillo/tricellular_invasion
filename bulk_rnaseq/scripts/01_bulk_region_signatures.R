@@ -1,7 +1,7 @@
 # =============================================================================
 # Standalone bulk RNA-seq module
 # Configuration: set BULKRNASEQ_CONFIG to a config.R path (see run.sh).
-# Unspecified settings retain the defaults of the original 1_bulkRNAseq.R.
+# Unspecified settings fall back to the defaults defined in this script.
 # =============================================================================
 CONFIG_PATH <- Sys.getenv("BULKRNASEQ_CONFIG", unset = "")
 .config_env <- new.env(parent = globalenv())
@@ -57,7 +57,7 @@ EXPORT_DIR <- cfg("EXPORT_DIR", NULL)
 ## 
 ## 1. load ----
 ## 
-RDATA <- cfg('RDATA', file.path(getwd(), 'data', 'LOAD_MYRIAM.RData'))
+RDATA <- cfg('RDATA', file.path(getwd(), 'data', 'bulk_counts.RData'))
 if (!exists("RAW_COUNTS2")) {
   if (!file.exists(RDATA)) stop("Input RData missing: ", RDATA,
                                 "\nSet RDATA in config/config.R before running.")

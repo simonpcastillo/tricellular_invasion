@@ -1,7 +1,7 @@
 # Bulk RNA-seq module configuration
-# Relative paths are anchored to BULKRNASEQ_ROOT, set by run.sh.
+# Relative paths are anchored to BULKRNASEQ_ROOT, which run.sh sets to this directory.
 PROJECT_ROOT <- normalizePath(Sys.getenv("BULKRNASEQ_ROOT", unset = "."), mustWork = TRUE)
-RDATA <- Sys.getenv("BULKRNASEQ_RDATA", unset = file.path(PROJECT_ROOT, "data", "LOAD_MYRIAM.RData"))
+RDATA <- Sys.getenv("BULKRNASEQ_RDATA", unset = file.path(PROJECT_ROOT, "data", "bulk_counts.RData"))
 ROOT_OUT <- Sys.getenv("BULKRNASEQ_OUT", unset = file.path(PROJECT_ROOT, "results"))
 EXPORT_DIR <- NULL  # optional existing directory to receive selected summary files
 

@@ -24,10 +24,10 @@ if (!file.exists(.config_file)) stop("Configuration not found: ", .config_file)
 source(.config_file, local = FALSE)
 
 RUN_SAMPLES <- unname(SAMPLES)
-_selected <- Sys.getenv("LIANA_SAMPLE", "")
-if (nzchar(_selected)) {
-  if (!(_selected %in% RUN_SAMPLES)) stop("Unknown LIANA_SAMPLE: ", _selected)
-  RUN_SAMPLES <- _selected
+.selected <- Sys.getenv("LIANA_SAMPLE", "")
+if (nzchar(.selected)) {
+  if (!(.selected %in% RUN_SAMPLES)) stop("Unknown LIANA_SAMPLE: ", .selected)
+  RUN_SAMPLES <- .selected
 }
 if (!file.exists(RESOURCE_CSV)) stop("Missing curated mouse LR resource: ", RESOURCE_CSV)
 curated <- read.csv(RESOURCE_CSV, stringsAsFactors = FALSE)

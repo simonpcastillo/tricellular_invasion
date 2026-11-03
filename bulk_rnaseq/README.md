@@ -1,13 +1,11 @@
 # Bulk RNA-seq | endothelial-region signature analysis
 
-A standalone module for **bulk RNA-seq analysis of mouse endothelial-enriched regions**. This module characterises expression differences between region classes, identifies conservative gene signatures, evaluates their ability to distinguish regions across mice, visualises endothelial and control compartments, and performs GO enrichment. It follows the original `1_bulkRNAseq.R` provided with the project; the original remains in `original/` for comparison.
-
-**Status:** Refactored for reusable file paths and configuration. *Not yet executed end-to-end on the original RData*, since the data and an R runtime are not available here. The original statistical code is mostly preserved; see `REVIEW_NOTES.md` for intentional changes and methodological caveats.
+A standalone module for **bulk RNA-seq analysis of mouse endothelial-enriched regions**. This module characterises expression differences between region classes, identifies conservative gene signatures, evaluates their ability to distinguish regions across mice, visualises endothelial and control compartments, and performs GO enrichment.
 
 ## Workflow
 
 ```text
-Input: LOAD_MYRIAM.RData
+Input: data/bulk_counts.RData
   ├─ RAW_COUNTS2  [genes × samples, raw or estimated counts]
   └─ RAW_META2    [sample, type, mouse]
                │
@@ -46,35 +44,28 @@ Input: LOAD_MYRIAM.RData
 ## Repository structure
 
 ```text
-bulkrnaseq_pipeline/
+bulk_rnaseq/
 ├── README.md
-├── REVIEW_NOTES.md
-├── run.sh                      # check, dry-run, run
+├── run.sh                      # check | run
 ├── config/
-│   └── config.R                # project paths and tuning parameters
+│   └── config.R                # paths and tuning parameters
 ├── scripts/
 │   └── 01_bulk_region_signatures.R
-├── jobs/
-│   ├── submit_myriad.sh        # submits one SGE job
-│   └── bulk_signatures.sge.sh  # batch resources and R module
-├── original/
-│   └── 1_bulkRNAseq.R          # unchanged historical source
-├── data/
-│   └── README.md               # place input RData here or point elsewhere
-└── results/
-    ├── bulkRNAseq_results/    # generated tables and objects
-    └── bulkRNAseq_figures/    # generated figures
+├── data/                       # create; input .RData goes here (not tracked)
+└── results/                    # generated (not tracked)
+    ├── bulkRNAseq_results/     # tables and objects
+    └── bulkRNAseq_figures/     # figures
 ```
 
 ## Script: `01_bulk_region_signatures.R`
 
 ### Stage 1 — Import and alignment
 
-Reads `LOAD_MYRIAM.RData` containing `RAW_COUNTS2` (rows = gene symbols, columns = RNA-seq sample IDs) and `RAW_META2` (required columns `sample`, `type`, `mouse`). The script aligns the metadata to the count matrix, drops unmatched count columns, checks group labels and retains a record of the aligned metadata (`input_metadata_aligned.csv`). `mouse` is used for statistical adjustment and cross-validation grouping.
+Reads the input `.RData` file containing `RAW_COUNTS2` (rows = gene symbols, columns = RNA-seq sample IDs) and `RAW_META2` (required columns `sample`, `type`, `mouse`). The script aligns the metadata to the count matrix, drops unmatched count columns, checks group labels and retains a record of the aligned metadata (`input_metadata_aligned.csv`). `mouse` is used for statistical adjustment and cross-validation grouping.
 
 ### Stage 2 — Define endothelial and control subsets
 
-Uses the four region types `BEC`, `CmEC`, `ImEC`, and `IpEC` for *signature discovery*. The source script optionally merges `CmEC` and `ImEC` into `mEC`, producing three comparison groups: `BEC`, `mEC`, `IpEC`. The tumour-only regions `Bt` and `It` are loaded for **figure validation only** and excluded from differential expression and gene selection. All class names and the merge are configurable.
+Uses the four region types `BEC`, `CmEC`, `ImEC`, and `IpEC` for *signature discovery*. The pipeline optionally merges `CmEC` and `ImEC` into `mEC`, producing three comparison groups: `BEC`, `mEC`, `IpEC`. The tumour-only regions `Bt` and `It` are loaded for **figure validation only** and excluded from differential expression and gene selection. All class names and the merge are configurable.
 
 ### Stage 3 — Pairwise differential expression
 
@@ -87,7 +78,7 @@ A **worst-case** gene-selection rule is applied: a gene is specific to region *g
 - **Tier 1:** minimum pairwise log2 FC ≥ `LFC_MIN`, with maximum pairwise adjusted p-value < `ALPHA`.
 - **Tier 2:** the second-worst comparison passes, but one named comparator (`hardest`) does not. Genes selected as tier 2 for multiple groups are excluded to avoid conflicting assignments.
 
-The selected panel is capped at `N_TOP` genes per region. The original script writes long-format gene lists, a tier-labelled wide table, and an RDS of the score and classifier objects. **Tier 2 genes should not be treated as unique regional markers.**
+The selected panel is capped at `N_TOP` genes per region. The pipeline writes long-format gene lists, a tier-labelled wide table, and an RDS of the score and classifier objects. **Tier 2 genes should not be treated as unique regional markers.**
 
 ### Stage 5 — Leave-one-mouse-out (LOMO) validation
 
@@ -110,33 +101,28 @@ The two tests answer different questions. `GO_RANK = 'mean_lfc'` is chosen to pr
 
 **R dependencies:** `limma`, `edgeR`, `ggplot2`, `tidyr`, `ggnewscale`, `patchwork`, `dplyr`; `scales` is used in plotting via its namespace. Optional: `svglite` for SVG exports and `fgsea`, `AnnotationDbi`, `GO.db`, `org.Mm.eg.db` for GO analysis. The R script uses base R pipes (`|>`), so **R ≥ 4.1** is required.
 
-1. Place your input `LOAD_MYRIAM.RData` in `data/`, or set `BULKRNASEQ_RDATA` to the existing file path.
+1. Place the input `.RData` file at `data/bulk_counts.RData`, or set `BULKRNASEQ_RDATA` to its existing path.
 2. Edit `config/config.R` for group names, signatures, merge policy, visualisation, and GO parameters. Do not edit analysis paths inside the R script.
 3. Run the preflight check, then run the analysis.
 
 ```bash
-bash run.sh check
-bash run.sh dry-run
-bash run.sh run
+bash run.sh check    # verify packages and input data
+bash run.sh run      # full analysis
 ```
 
 To keep input data in its existing location and send results elsewhere without editing the repository:
 
 ```bash
-export BULKRNASEQ_RDATA=/path/to/LOAD_MYRIAM.RData
+export BULKRNASEQ_RDATA=/path/to/counts.RData
 export BULKRNASEQ_OUT=/path/to/bulk_results
 bash run.sh run
 ```
 
 To disable GO (without deleting any code), edit `RUN_GO <- FALSE` in `config/config.R`.
 
-### Myriad HPC (SGE)
+### Running on a cluster
 
-```bash
-bash jobs/submit_myriad.sh
-```
-
-The SGE template requests one CPU, 32 GB memory, 20 GB temporary space, and eight hours. Adjust in `jobs/bulk_signatures.sge.sh` if needed. By default it loads `r/r-4.4.2_bc-3.20` and uses `$HOME/Scratch/R/libs/spatial_transcriptomics`; replace with your actual R library if different.
+The analysis is single-threaded; one CPU and roughly 32 GB of memory are sufficient. Set `BULKRNASEQ_ROOT`, `BULKRNASEQ_RDATA` and `BULKRNASEQ_OUT` in your batch script, then call `bash run.sh run`.
 
 ## Outputs
 
@@ -160,12 +146,8 @@ The script creates the following directories under `ROOT_OUT`:
 
 ## Reproducibility and caveats
 
-**No runtime validation has yet occurred.** The input RData and R/Bioconductor packages are required to verify that the outputs reproduce your previous results. The original script is preserved for diffing.
-
 - **Statistical units:** mice are biological replicates; multiple dissected regions from one mouse are not independent mice. The mouse-adjusted model handles a fixed mouse effect where identifiable; inference should be interpreted in the context of the number of biological replicates.
-- **LOMO caveat:** marker selection is nested within folds, but the historical classifier calculates logCPM and standardisation using combined training and held-out data. This is not strictly independent preprocessing and may bias performance. A nested, train-only normalisation/scaling implementation should be tested before reporting prospective accuracy. This was *not silently changed* here.
-- **ORA caveat:** the historical ORA calculation applies BH to terms retained with ≥2 overlapping genes rather than to all tested GO terms. This may underestimate FDR. Treat ORA as exploratory until the multiple-testing family is corrected; this refactor preserves the existing statistics.
-- **Input counts:** the original script allows non-integer estimated counts but does not automatically round before fitting; check that count input is appropriate for edgeR–voom.
+- **LOMO caveat:** marker selection is nested within folds, but the classifier calculates logCPM and standardisation using combined training and held-out data. This is not strictly independent preprocessing and may bias performance. A nested, train-only normalisation/scaling implementation should be tested before reporting prospective accuracy. 
+- **ORA caveat:** the ORA calculation applies BH to terms retained with ≥2 overlapping genes rather than to all tested GO terms. This may underestimate FDR. Treat ORA as exploratory until the multiple-testing family is corrected.
+- **Input counts:** non-integer estimated counts are allowed and are not automatically rounded before fitting; check that count input is appropriate for edgeR–voom.
 - **Signature transfer:** the wide signature table discards or annotates tiers; downstream scoring should prefer `region_panel.csv` or `signature_shapes.rds$list_tier1` instead of treating all tier-2 genes as unique markers.
-
-See [`REVIEW_NOTES.md`](REVIEW_NOTES.md) for detailed differences from the original source and future validation tasks.
