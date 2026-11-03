@@ -107,12 +107,13 @@ Lead author: Simona Parrinello, UCL Cancer Institute, UCL — s.parrinello@ucl.a
 
 Repository maintainer: Simon Castillo, UCL Cancer Institute, UCL — simon.castillo@ucl.ac.uk
 
-### Generative AI Disclosure
+## License
+
+Apache License 2.0 — see [LICENSE](LICENSE).
+
+## Generative AI Disclosure
 
 Generative artificial intelligence (GenAI) was used to assist with code auditing, refactoring, documentation, and workflow organisation. This included reviewing code structure, identifying potential errors, improving readability, and standardising file paths and dependencies.
 
 The underlying analytical approaches, scientific rationale, and interpretation of results remain the responsibility of the authors.
 
-## License
-
-Apache License 2.0 — see [LICENSE](LICENSE).
