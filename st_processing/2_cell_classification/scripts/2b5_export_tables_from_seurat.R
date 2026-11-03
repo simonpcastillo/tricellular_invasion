@@ -2,7 +2,7 @@
 # Export lightweight tables from classified Seurat object
 # =============================================================================
 # Usage:
-#   Rscript export_tables.R \
+#   Rscript 2b5_export_tables_from_seurat.R \
 #     --rds     /path/to/sample_classified.rds \
 #     --out_dir /path/to/output_dir \
 #     --lib_path /path/to/R/libs   # optional
