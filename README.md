@@ -1,4 +1,4 @@
-# tricellular_invasion
+# tri-cellular glioblastoma invasion
 
 Code accompanying **"A tri-cellular inflammatory cross-talk drives perivascular invasion in Glioblastoma"**.
 
