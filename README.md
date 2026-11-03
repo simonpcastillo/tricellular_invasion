@@ -71,7 +71,16 @@ tricellular_invasion/
 │   └── README.md
 │
 ├── if_processing/                      immunofluorescence quantification
-│   └── bulk_margin_segmentation/       (to be added)
+│   ├── if_bulk_margin_segmentation/    QuPath: section → tumour core, infiltrative
+│   │   ├── 0_setupimage.groovy         margin, non-tumour, necrosis
+│   │   ├── 1_instanseg.groovy          InstanSeg cell detection + intensity features
+│   │   ├── 2_classify.groovy           cells → Tumour / Stroma
+│   │   ├── 3_spatialmap.groovy         Gaussian density map of tumour cells
+│   │   ├── 4_segmentation_fixed_v2.groovy   density thresholds → the four regions
+│   │   └── 5_measure.groovy            per-region area, perimeter, cell counts
+│   ├── if_ec_activation_index/
+│   │   └── activation_index.ijm        Fiji: VCAM1 / CCL2 per nucleus outside tdTomato
+│   └── README.md
 │
 ├── LICENSE                             Apache License 2.0
 └── README.md
@@ -80,7 +89,9 @@ tricellular_invasion/
 ## How to read it
 
 The spatial pipeline runs in order: `0 → 1 → 2 → 3`, with `4` taking input from `2` and `3`.
-`bulk_rnaseq/` and `if_processing/` are independent of the spatial stages.
+`bulk_rnaseq/` and `if_processing/` are independent of the spatial stages and of each other.
+Within `if_bulk_margin_segmentation/` the Groovy scripts run in their numbered order inside a
+QuPath project; `activation_index.ijm` is a standalone Fiji macro.
 
 Each module directory carries its own README (or `how_to_run.md` for stage 0) with the inputs it
 expects, the parameters it exposes, the outputs it writes, and the caveats that apply to them.
@@ -90,8 +101,9 @@ preflight (`check_inputs.R`, or `bash run.sh check`) before the analysis itself.
 ## Requirements
 
 R (Seurat v5, LIANA, limma/edgeR and the packages named in each module README) and Python 3
-(see the `requirements.txt` files). Package lists are given per module; install only what the
-stages you intend to run require.
+(see the `requirements.txt` files). The immunofluorescence module needs QuPath with the
+InstanSeg extension, and Fiji/ImageJ. Package lists are given per module; install only what
+the stages you intend to run require.
 
 ## Data availability
 
