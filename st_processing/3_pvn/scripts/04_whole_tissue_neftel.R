@@ -7,7 +7,7 @@ if (!length(.bootstrap_path)) stop('Run with Rscript, not source(): cannot infer
 source(.config_file, local = FALSE)
 
 # Whole-tissue (not EC-anchored) Neftel composition by annotated Parent region.
-# Refactored from 2_stack_region.R, which expected df0 and OUT_FIG to exist globally.
+# Self-contained: inputs and output paths are resolved from config/config.R.
 suppressPackageStartupMessages({
   library(data.table); library(ggplot2); library(svglite); library(dplyr)
 })

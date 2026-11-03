@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # =============================================================================
-# tdtom_tumourlike_score.py
+# 2b4_tdtom_tumourlike_score.py
 #
 # Score clusters AND sub-clusters on transcriptional tumour-likeness, from the
-# marker tables written by tdtom_cluster_enrichment.R (Steps 7 and 8b).
+# marker tables written by 2b1_tdtom_cluster_enrichment_v4.R (Steps 7 and 8b).
 #
 # The question this answers: which units in a section carry a glioma programme,
 # independently of their TdTomato reporter rate? Reporter rate is carried
@@ -619,7 +619,7 @@ def make_figure(U: pd.DataFrame, path: str) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(
         description="Score clusters and sub-clusters on tumour-likeness from "
-                    "tdtom_cluster_enrichment.R marker tables.")
+                    "2b1_tdtom_cluster_enrichment_v4.R marker tables.")
     ap.add_argument("--in", dest="indirs", nargs="+", required=True,
                     help="one output directory per section")
     ap.add_argument("--out", required=True, help="output directory")

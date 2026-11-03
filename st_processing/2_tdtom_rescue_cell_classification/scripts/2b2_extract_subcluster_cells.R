@@ -1,9 +1,9 @@
 #!/usr/bin/env Rscript
 # =============================================================================
-# extract_subcluster_cells.R
+# 2b2_extract_subcluster_cells.R
 #
 # Recover the per-cell -> sub-cluster assignment from a completed
-# tdtom_cluster_enrichment_v4.R run.
+# 2b1_tdtom_cluster_enrichment_v4.R run.
 #
 # WHY THIS EXISTS
 #   The enrichment script builds `sub_cells` (cell, parent_cluster, sub_id) in

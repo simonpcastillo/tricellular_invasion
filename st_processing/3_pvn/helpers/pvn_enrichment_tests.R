@@ -1,5 +1,5 @@
 # =============================================================================
-# PVN ENRICHMENT STATISTICS  (add-on to 2_1_pvn_final.R)
+# PVN ENRICHMENT STATISTICS  (add-on to 01_pvn_discovery.R)
 # =============================================================================
 # Answers three questions with EC-level permutation tests (the EC neighbourhood
 # is the unit; region is available as a stratum). Source AFTER section 9 of the

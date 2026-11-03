@@ -7,7 +7,7 @@ if (!length(.bootstrap_path)) stop('Run with Rscript, not source(): cannot infer
 source(.config_file, local = FALSE)
 
 ################################################################################
-# 2_1_pvn_final.R
+# 01_pvn_discovery.R
 # Project: Perivascular invasion paper
 # Author: Simon Castillo
 # Last update: 17/09/2026
@@ -29,7 +29,7 @@ if (length(.missing_helpers)) stop(
 for (.f in FILES) if (!file.exists(.f)) stop('Missing QuPath input: ', .f)
 sink(log_file, split = TRUE)
 timestamp()
-cat("Starting script: 2_1_pvn_final.R\n")
+cat("Starting script: 01_pvn_discovery.R\n")
 
 suppressPackageStartupMessages({
   library(data.table)

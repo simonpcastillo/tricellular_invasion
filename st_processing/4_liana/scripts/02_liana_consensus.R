@@ -1,5 +1,5 @@
 ################################################################################
-# 3_2_liana_consensus.R
+# 02_liana_consensus.R
 # Project: Perivascular invasion paper
 # Author: Simon Castillo
 # Last update: 19/09/2026
@@ -220,6 +220,6 @@ for(mode in modes){
   
   message("Done. Outputs in ", normalizePath(OUT_DIR))
 }
-print('End of 3_2_liana_consensus.R ------------------------------------------')
+print('End of 02_liana_consensus.R -------------------------------------------')
 
 

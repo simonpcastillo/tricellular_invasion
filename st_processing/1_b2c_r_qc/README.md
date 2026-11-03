@@ -5,9 +5,10 @@ Two sequential R scripts to convert bin2cell outputs to per-sample Seurat object
 ## Repository layout
 
 ```text
-repository/
-├── 0_b2c_seurat.R
-├── 1_qc.R
+1_b2c_r_qc/
+├── scripts/
+│   ├── 0_b2c_seurat.R
+│   └── 1_qc.R
 ├── input/
 │   ├── bin2cell/
 │   │   └── <sample_id>/
@@ -46,20 +47,20 @@ Install the R packages `Seurat`, `Matrix`, `data.table`, `jsonlite`, `png`, `ggp
 
 ## Run the pipeline
 
-From the repository root:
+From the module root (`st_processing/1_b2c_r_qc/`):
 
 ```bash
-Rscript 0_b2c_seurat.R
-Rscript 1_qc.R
+Rscript scripts/0_b2c_seurat.R
+Rscript scripts/1_qc.R
 ```
 
-Each script resolves its default paths from its **own location**; the commands also work when launched from another working directory. To keep large data outside the Git repository, set one or both shared path environment variables before invoking either script:
+Each script resolves its default paths from its **own location**, so by default `input/` and `output/` are expected inside `scripts/`; the commands also work when launched from another working directory. Use the environment variables below to put the data anywhere else. To keep large data outside the Git repository, set one or both shared path environment variables before invoking either script:
 
 ```bash
 export PIPELINE_INPUT_DIR=/path/to/input
 export PIPELINE_OUTPUT_DIR=/path/to/output
-Rscript 0_b2c_seurat.R
-Rscript 1_qc.R
+Rscript scripts/0_b2c_seurat.R
+Rscript scripts/1_qc.R
 ```
 
 The output of Step 0 (`output/00_seurat/*.rds`) is exactly the input of Step 1. The scripts skip existing outputs; Step 1 also preserves and incrementally updates `QC_summary.csv`. Remove existing files if you deliberately want a full re-run with new settings.
@@ -77,7 +78,3 @@ Change the three `QC_*` constants near the beginning of `1_qc.R` as required. Th
 ## Spatial image conventions
 
 The bin2cell `cdata_spatial_fullres.csv` file must contain unique cell IDs in its first column, plus `x_full` and `y_full` coordinates in full-resolution image pixels. Step 0 stores these unscaled positions in the Seurat `VisiumV1` image object, together with the **hires** Space Ranger scale factor. Because only the hires PNG is stored in the image slot, both the `hires` and `lowres` **plot scale selections** deliberately use the hires factor so that Seurat's default spatial plots align. The untouched original scale-factor JSON is also saved as `obj@misc$spaceranger_scalefactors`. The displayed image is `tissue_hires_image.png`; the marker diameter is a display placeholder, not a measured cell size. Check the reported percentage of coordinates inside the image and verify image registration if it is low.
-
-## Validation status
-
-Scripts were reviewed for sequential file-path consistency and key input/output checks. An end-to-end execution with Seurat and real sample data is still recommended before releasing the repository.

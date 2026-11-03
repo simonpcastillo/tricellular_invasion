@@ -1,3 +1,20 @@
+# =============================================================================
+# Standalone bulk RNA-seq module
+# Configuration: set BULKRNASEQ_CONFIG to a config.R path (see run.sh).
+# Unspecified settings retain the defaults of the original 1_bulkRNAseq.R.
+# =============================================================================
+CONFIG_PATH <- Sys.getenv("BULKRNASEQ_CONFIG", unset = "")
+.config_env <- new.env(parent = globalenv())
+if (nzchar(CONFIG_PATH)) {
+  if (!file.exists(CONFIG_PATH)) stop("Configuration file missing: ", CONFIG_PATH)
+  sys.source(CONFIG_PATH, envir = .config_env)
+}
+cfg <- function(name, default) {
+  if (exists(name, envir = .config_env, inherits = FALSE))
+    get(name, envir = .config_env, inherits = FALSE)
+  else default
+}
+
 ################################################################################
 # Project: Perivascular invasion paper
 # Author: Simon Castillo
@@ -15,8 +32,9 @@ suppressPackageStartupMessages({
 })
 
 .masked <- function() {
-  v <- c("desc", "slice", "rename", "first", "count", "select",
-         "union", "intersect", "setdiff", "collapse")
+  v <- intersect(c("desc", "slice", "rename", "first", "count", "select",
+                   "union", "intersect", "setdiff", "collapse"),
+                 getNamespaceExports("dplyr"))
   v[vapply(v, function(f) { w <- find(f)
   !length(w) || w[1] != "package:dplyr" }, logical(1))]
 }
@@ -28,21 +46,21 @@ if (length(.masked())) {
          paste(.bad, collapse = ", "), "\n  restart R and source this file first.")
   cat("NOTE: dplyr was masked by an S4 package and has been re-attached on top\n")
 }
-ROOT_OUT  <- '/Volumes/ritd-ag-project-rd02g4-scast97/TIER2/gbm_ec/final_res'
+ROOT_OUT <- cfg('ROOT_OUT', file.path(getwd(), 'results'))
 OUT_CSV   <- paste0(ROOT_OUT, "/bulkRNAseq_results")                 
 OUT_FIG   <- paste0(ROOT_OUT, "/bulkRNAseq_figures") 
 
 dir.create(OUT_CSV, showWarnings = FALSE, recursive = TRUE)
 dir.create(OUT_FIG, showWarnings = FALSE, recursive = TRUE)
-EXPORT_DIR <- NULL 
+EXPORT_DIR <- cfg("EXPORT_DIR", NULL) 
 
 ## 
 ## 1. load ----
 ## 
-RDATA <- file.path("/Volumes/ritd-ag-project-rd02g4-scast97/TIER1/gbm_ec",
-                   "shared_by_wenhao_25062026/LOAD_MYRIAM.RData")
+RDATA <- cfg('RDATA', file.path(getwd(), 'data', 'LOAD_MYRIAM.RData'))
 if (!exists("RAW_COUNTS2")) {
-  stopifnot(file.exists(RDATA))
+  if (!file.exists(RDATA)) stop("Input RData missing: ", RDATA,
+                                "\nSet RDATA in config/config.R before running.")
   load(RDATA)
 }
 stopifnot(exists("RAW_COUNTS2"), exists("RAW_META2"))
@@ -66,6 +84,7 @@ stopifnot(identical(rownames(RAW_META2), colnames(RAW_COUNTS2)),
 
 cat("=== loaded ===\n")
 cat("genes:", nrow(RAW_COUNTS2), "| samples:", ncol(RAW_COUNTS2), "\n")
+write.csv(RAW_META2, file.path(OUT_CSV, "input_metadata_aligned.csv"), row.names = TRUE)
 print(table(region = RAW_META2$type))
 print(table(mouse = RAW_META2$mouse, region = RAW_META2$type))
 
@@ -73,8 +92,8 @@ print(table(mouse = RAW_META2$mouse, region = RAW_META2$type))
 ## 2. two matrices: EC and Ctrl----
 ## 
 
-EC_TYPES <- c("BEC", "CmEC", "ImEC", "IpEC")
-CONTROL_TYPES <- c("Bt", "It")
+EC_TYPES <- cfg("EC_TYPES", c("BEC", "CmEC", "ImEC", "IpEC"))
+CONTROL_TYPES <- cfg("CONTROL_TYPES", c("Bt", "It"))
 
 lv <- levels(factor(RAW_META2$type))
 miss_ec  <- setdiff(EC_TYPES, lv)
@@ -116,23 +135,23 @@ if (!all(counts_EC == round(counts_EC), na.rm = TRUE))
 ##
 
 
-LFC_MIN    <- 0.5     # worst-case log2 FC floor 1.0
-ALPHA      <- 0.05    # FDR on the closest contrast
-N_TOP      <- 30      # genes per region in the panel
-MIN_DET    <- 10      # count floor for detection
-NPERM      <- 1000    # permutation null for the accuracy number
-DROP_MOUSE <- NULL    # e.g. "m_5" (not implemented)
-PAIRS_IN   <- NULL    # not implemented
+LFC_MIN    <- cfg("LFC_MIN", 0.5)     # worst-case log2 FC floor 0.5
+ALPHA      <- cfg("ALPHA", 0.05)    # BH-adjusted p-value threshold
+N_TOP      <- cfg("N_TOP", 30)      # genes per region in the panel
+MIN_DET    <- cfg("MIN_DET", 10)      # count floor for detection
+NPERM      <- cfg("NPERM", 1000)    # permutation null for the accuracy number
+DROP_MOUSE <- cfg("DROP_MOUSE", NULL)    # optional mouse ID to exclude
+PAIRS_IN   <- cfg("PAIRS_IN", NULL)    # optional precomputed contrasts
 
 ## Merge regions the data cannot separate.
-MERGE <- list(mEC = c("CmEC", "ImEC"))
+MERGE <- cfg("MERGE", list(mEC = c("CmEC", "ImEC")))
 
 ## 4. Figure parms ----
-TOP_N        <- 5                # genes per region shown
-CONTROLS     <- c("Bt", "It")    # displayed, never used for selection
-SHOW         <- "samples"        # "samples" or "regions"
-MARKER_SCALE <- "auto"           # "auto" | "z" | "absolute"
-endothelial_markers <- c("Pecam1", "Cdh5", "Kdr", "Emcn", "Vwf")
+TOP_N        <- cfg("TOP_N", 5)                # genes per region shown
+CONTROLS     <- cfg("CONTROLS", c("Bt", "It"))    # displayed, never used for selection
+SHOW         <- cfg("SHOW", "samples")        # "samples" or "regions"
+MARKER_SCALE <- cfg("MARKER_SCALE", "auto")           # "auto" | "z" | "absolute"
+endothelial_markers <- cfg("endothelial_markers", c("Pecam1", "Cdh5", "Kdr", "Emcn", "Vwf"))
 
 
 ### design notes ----
@@ -211,7 +230,7 @@ pairwise <- function(cts, meta, groups) {
   list(LFC = L, PADJ = P, genes = gg)
 }
 
-PAIRS_IN <- if (exists("PAIRS_IN")) PAIRS_IN else NULL
+# PAIRS_IN is provided by config (NULL by default).
 pw <- if (is.null(PAIRS_IN)) pairwise(cts, meta, GROUPS) else PAIRS_IN
 LFC <- pw$LFC; PADJ <- pw$PADJ; genes <- pw$genes
 
@@ -687,7 +706,7 @@ cat("\npanel for figure:", nrow(top), "signature genes +", length(em),
 ## 
 ## 2. expression matrices ----
 ## 
-keep <- rowSums(cts >= 10) >= min(table(meta$type))
+keep <- rowSums(cts >= MIN_DET) >= min(table(meta$type))
 keep[rownames(cts) %in% c(top$gene, em)] <- TRUE
 lcpm <- cpm(calcNormFactors(DGEList(cts[keep, ])), 
             log = TRUE, prior.count = 2)
@@ -961,11 +980,15 @@ write.csv(wide, file.path(OUT_CSV, "ec_signatures_20_wide.csv"), row.names = FAL
 
 if (!is.null(EXPORT_DIR)) {
   if (dir.exists(EXPORT_DIR)) {
+    dir.create(EXPORT_DIR, showWarnings = FALSE, recursive = TRUE)
     for (f in c("ec_signatures_20_wide.csv", "region_panel.csv",
-                "figure_genes.csv", "classification_accuracy.csv",
-                "final_signature_heatmap.png"))
-      if (file.exists(file.path(OUT_CSV, f)))
-        file.copy(file.path(OUT_CSV, f), file.path(EXPORT_DIR, f), overwrite = TRUE)
+                "figure_genes.csv", "classification_accuracy.csv")) {
+      from <- file.path(OUT_CSV, f)
+      if (file.exists(from)) file.copy(from, file.path(EXPORT_DIR, f), overwrite = TRUE)
+    }
+    from <- file.path(OUT_FIG, "final_signature_heatmap.png")
+    if (file.exists(from))
+      file.copy(from, file.path(EXPORT_DIR, basename(from)), overwrite = TRUE)
     cat("\ncopied deliverables to", EXPORT_DIR, "\n")
   } else cat("\nEXPORT_DIR not reachable, skipped:", EXPORT_DIR, "\n")
 }
@@ -993,16 +1016,16 @@ cat("\n=== done ===\noutputs in", normalizePath(OUT_CSV), "\n")
 ## significant is riding on a handful of top genes.
 
 ## ---- knobs (the only place these are set) ----
-RUN_GO        <- TRUE
-GO_ORGDB      <- "org.Mm.eg.db"   # mouse. Human: "org.Hs.eg.db"
-GO_ONT        <- "BP"             # "BP" | "MF" | "CC" or a vector
-GO_MINSIZE    <- 15               # AFTER restricting to the universe
-GO_MAXSIZE    <- 500              # huge terms are uninformative
-GO_RANK       <- "mean_lfc"       # "mean_lfc" | "min_lfc"; see note
-GO_NPERM      <- 10000            # fgsea preliminary permutations
-GO_TOP_PLOT   <- 5                # terms per region in the figures
-GO_JACCARD    <- 0.5              # leading-edge overlap -> redundant
-GO_PADJ       <- 0.05
+RUN_GO        <- cfg("RUN_GO", TRUE)
+GO_ORGDB      <- cfg("GO_ORGDB", "org.Mm.eg.db")   # mouse. Human: "org.Hs.eg.db"
+GO_ONT        <- cfg("GO_ONT", "BP")             # "BP" | "MF" | "CC" or a vector
+GO_MINSIZE    <- cfg("GO_MINSIZE", 15)               # AFTER restricting to the universe
+GO_MAXSIZE    <- cfg("GO_MAXSIZE", 500)              # huge terms are uninformative
+GO_RANK       <- cfg("GO_RANK", "mean_lfc")       # "mean_lfc" | "min_lfc"; see note
+GO_NPERM      <- cfg("GO_NPERM", 10000)            # fgsea preliminary permutations
+GO_TOP_PLOT   <- cfg("GO_TOP_PLOT", 5)                # terms per region in the figures
+GO_JACCARD    <- cfg("GO_JACCARD", 0.5)              # leading-edge overlap -> redundant
+GO_PADJ       <- cfg("GO_PADJ", 0.05)
 
 ## GO_RANK note. The selection statistic is `min_lfc`, the WORST
 ## case across rivals. That is right for picking genes but wrong
@@ -1363,7 +1386,7 @@ if (!RUN_GO) {
      arrange(region, desc(NES)) -> df_plot
    
    p_nes <- df_plot |>
-     mutate(label = factor(label, level = unique(df_plot$label)))|> 
+     mutate(label = factor(label, levels = unique(df_plot$label)))|> 
      ggplot(aes(region, label, fill = NES)) +
      geom_tile(colour = "white", linewidth = .4) +
      geom_text(aes(label = ifelse(star == "", 
@@ -1464,9 +1487,9 @@ if (!RUN_GO) {
      ggsave(file.path(OUT_FIG, "go_running_es.png"), plot = p_run,
             width = 8.4, height = 2.1 * ceiling(length(GROUPS) / 3) + .9, dpi = 300)
      
-     svglite::svglite(paste0(OUT_FIG,'/go_running_es.svg'),
-                       height=3, 
-                      width = 1.3)
+     svglite::svglite(file.path(OUT_FIG, 'go_running_es.svg'),
+                       height = 2.1 * ceiling(length(GROUPS) / 3) + .9,
+                       width = 8.4)
      print(p_run)
      dev.off()
      

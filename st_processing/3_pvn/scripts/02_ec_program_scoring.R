@@ -7,7 +7,7 @@ if (!length(.bootstrap_path)) stop('Run with Rscript, not source(): cannot infer
 source(.config_file, local = FALSE)
 
 ################################################################################
-# 2_2_EC_program_PVN_scoring.R
+# 02_ec_program_scoring.R
 # Project: Perivascular invasion paper
 # Author: Simon Castillo
 # Last update: 22/09/2026

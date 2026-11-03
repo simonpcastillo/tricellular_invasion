@@ -1,5 +1,5 @@
 # =============================================================================
-# Neftel GBM state + Cell type classification — expanded pipeline (v3)
+# Neftel GBM state + Cell type classification — expanded pipeline (v7)
 # - TdTomato label from gene expression OR predicted (--use_predicted)
 # - Neftel scoring on TdTom+ / cell-type scoring on TdTom-
 # - Proliferation state (G1S / G2M) on ALL cells via permutation
@@ -31,9 +31,9 @@
 #              both regimes, not because whole-transcriptome data needs it.
 #
 # ---------------------------------------------------------------------------
-#   MEASURED ON YOUR OWN DATA (7000_Scan2 + 7003_Scan2, 208k cells, whole
-#   transcriptome), by re-correcting the enrichment_stats.csv files. Not
-#   simulated. See regate_diagnosis.png.
+#   Measured on the two mouse sections (7000_Scan2 + 7003_Scan2, 208k cells,
+#   whole transcriptome), by re-correcting the enrichment_stats.csv files.
+#   Not simulated.
 #
 #   Your v6 gate contains TWO errors that push in OPPOSITE directions:
 #
@@ -134,8 +134,8 @@
 #              simulated tissue: 4.2% -> 11.6% assigned, accuracy 72 -> 87. BUT at
 #              MATCHED coverage pooling was 3-6 points WORSE than no pooling — it
 #              buys coverage by lowering the bar, not by ranking cells better. Use
-#              real centroids, keep k at 6-10, check Moran's I first (see
-#              neftel_panel_diagnostics_lite.R), and never present a pooled label
+#              real centroids, keep k at 6-10, check Moran's I first, and
+#              never present a pooled label
 #              as evidence that neighbouring cells share a state: the smoothing
 #              assumes it. Report the headline result at k=0 as well.
 #
@@ -288,7 +288,7 @@
 #      score scale" caveat that v1's comments correctly flagged.
 #
 # Usage:
-#   Rscript neftel_v3.R \
+#   Rscript 2b3_neftel_classify_hybrids_v7.R \
 #     --rds           /path/to/sample_classified.rds \
 #     --neftel        /path/to/neftel_209_full.csv \
 #     --tdtomato      /path/to/rescued_tdtomato.csv \
@@ -304,7 +304,7 @@
 #   unless at least one myeloid signature file is supplied.
 #
 # Usage WITH myeloid state sub-typing (v3, Step 6c):
-#   Rscript neftel_v3.R \
+#   Rscript 2b3_neftel_classify_hybrids_v7.R \
 #     --rds               /path/to/sample_classified.rds \
 #     --neftel            /path/to/neftel_209_full.csv \
 #     --tdtomato          /path/to/rescued_tdtomato.csv \
@@ -360,7 +360,8 @@
 #     --calib_n_cells           cells sampled for calibration            [500]
 #
 # Recommended FIRST run on a new object — cheap, exercises every new code path:
-#   Rscript neftel_v3.R --rds subset.rds --neftel neftel_209_full.csv \
+#   Rscript 2b3_neftel_classify_hybrids_v7.R --rds subset.rds \
+#     --neftel neftel_209_full.csv \
 #     --tdtomato rescued_tdtomato.csv --out_dir results/smoketest \
 #     --miller_signatures miller_2025_microglia.csv \
 #     --qian_signatures qian_2026_microglia.csv \
@@ -494,21 +495,21 @@ opt_list <- list(
                            "sub-cluster the marker scorer tiered as tumour-like. OFF by default:",
                            "with it off this script's output is unchanged [FALSE]")),
   make_option("--subcluster_units", type = "character", default = NULL,
-              help = "tumourlike_units.csv from tdtom_tumourlike_score.py (required if --subcluster_rescue)"),
+              help = "tumourlike_units.csv from 2b4_tdtom_tumourlike_score.py (required if --subcluster_rescue)"),
   make_option("--subcluster_cells", type = "character", default = NULL,
               help = paste("<case>_subcluster_cells.csv (cell_id -> sub_id_full), from",
-                           "extract_subcluster_cells.R or a v5+ enrichment run (required if",
+                           "2b2_extract_subcluster_cells.R or a v5+ enrichment run (required if",
                            "--subcluster_rescue)")),
   make_option("--rescue_tiers", type = "character",
               default = "A_confident_tumour,B_probable_tumour",
               help = paste("Comma-separated tiers eligible for rescue. Tier is assigned by",
-                           "tdtom_tumourlike_score.py from marker panels, NOT from reporter rate",
+                           "2b4_tdtom_tumourlike_score.py from marker panels, NOT from reporter rate",
                            "[A_confident_tumour,B_probable_tumour]")),
   make_option("--rescue_suspect_tiers", type = "character",
               default = "B_probable_tumour,C_ambiguous,D_weak",
-              help = paste("Rescued tiers to report as 'suspect' in the counts file, so",
-                           "plot_rescue_fractions.R can show how much of the increment rests",
-                           "on weaker evidence. Intersected with --rescue_tiers",
+              help = paste("Rescued tiers to report as 'suspect' in the counts file, to",
+                           "show how much of the increment rests on weaker",
+                           "evidence. Intersected with --rescue_tiers",
                            "[B_probable_tumour,C_ambiguous,D_weak]"))
 )
 
@@ -944,7 +945,7 @@ if (length(tumour_cells) == 0) stop("No TdTomato+ cells found")
 #
 # WHAT IT DOES
 #   Relabels TdTom_neg -> TdTom_pos for cells sitting in a sub-cluster that
-#   tdtom_tumourlike_score.py tiered as tumour-like. It runs HERE, before
+#   2b4_tdtom_tumourlike_score.py tiered as tumour-like. It runs HERE, before
 #   tumour_cells / nontumour_cells are consumed by anything, so Steps 4, 5, 6,
 #   6b, 6c, 7 and 8 all see the updated split with no further changes.
 #
@@ -1073,8 +1074,8 @@ if (SUBCLUSTER_RESCUE) {
     print(per_unit[order(-per_unit$n_rescued), ], row.names = FALSE)
   }
 
-  # Counts file for plot_rescue_fractions.R. Column names and the pre/post
-  # convention are that script's documented contract: n_tdtom_pos / n_tdtom_neg
+  # Rescue-fraction counts file. Column names and the pre/post
+  # convention are a fixed contract: n_tdtom_pos / n_tdtom_neg
   # are PRE-rescue and must sum to n_cells_total, which is why they are taken
   # from tdtom_label_original rather than from the updated labels.
   # n_rescued_suspect: the part of the increment that came from a weaker tier.

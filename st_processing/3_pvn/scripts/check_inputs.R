@@ -25,4 +25,4 @@ if (length(missing_packages)) cat('Missing R packages: ',
                                     paste(missing_packages,collapse=', '),'\n')
 if (length(missing_packages)||any(!file.exists(checks)))
   stop('Preflight failed. Fix missing dependencies before running all steps.',call.=FALSE)
-message('All mandatory inputs and packages found. Runtime analyses not yet validated.')
+message('All mandatory inputs and packages found.')

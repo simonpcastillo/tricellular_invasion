@@ -3,7 +3,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODE="${1:-all}"
 if ! command -v Rscript >/dev/null 2>&1; then
-  echo 'Rscript not found. Load an R module (e.g. on Myriad).' >&2; exit 1
+  echo 'Rscript not found. Load or install R before running.' >&2; exit 1
 fi
 case "$MODE" in
   check)

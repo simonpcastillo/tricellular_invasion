@@ -6,7 +6,7 @@ if (!length(.bootstrap_path)) stop('Run with Rscript, not source(): cannot infer
 .config_file <- Sys.getenv('PVN_CONFIG', file.path(.project_root, 'config', 'config.R'))
 source(.config_file, local = FALSE)
 
-# Independent region composition summary (formerly panel 2C in 2_hd_to_pvn.R).
+# Independent region composition summary (paper panel 2C).
 # Figures 2B and 2D originated in QuPath and are not reproduced here.
 suppressPackageStartupMessages({
   library(readr); library(dplyr); library(tidyr); library(ggplot2); library(svglite)

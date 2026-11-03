@@ -34,7 +34,7 @@ segmentation_files/                         # --geojson-root
 ### Output directory
 
 ```text
-bin2cell_updated2/                          # --outdir
+bin2cell/                                   # --outdir
 └── <sample>/
     │
     ├── rescaled_image/

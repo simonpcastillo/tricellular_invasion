@@ -140,7 +140,7 @@
 # =============================================================================
 # Usage
 # -----------------------------------------------------------------------------
-#   Rscript tdtom_cluster_enrichment.R \
+#   Rscript 2b1_tdtom_cluster_enrichment_v4.R \
 #     --rds       /path/to/1234_Scan1_classified.rds \
 #     --tdtomato  /path/to/rescued_tdtomato.csv \
 #     --out_dir   /path/to/out

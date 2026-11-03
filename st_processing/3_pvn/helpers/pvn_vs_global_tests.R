@@ -20,7 +20,7 @@
 # immediate perivascular space beyond the regional background -- that is the
 # interpretable "perivascular vs tissue" test. Report both.
 #
-# Source AFTER section 6 of 2_1_pvn_final.R (needs df0 with class/Classification
+# Source AFTER section 6 of 01_pvn_discovery.R (needs df0 with class/Classification
 # /cx/cy/gid/Image/region, and cnt with Image/e/PVN).
 # =============================================================================
 

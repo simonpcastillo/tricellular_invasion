@@ -1,5 +1,5 @@
 ################################################################################
-# 3_1_liana_loop_modes.R
+# 01_liana_inference.R
 # Project: Perivascular invasion paper
 # Author: Simon Castillo
 # Last update: 18/09/2026

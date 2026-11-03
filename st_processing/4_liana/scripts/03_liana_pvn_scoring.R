@@ -1,5 +1,5 @@
 ################################################################################
-# 3_3_liana_PVN_scoring.R
+# 03_liana_pvn_scoring.R
 # Project: Perivascular invasion paper
 # Author: Simon Castillo
 # Last update: 19/09/2026

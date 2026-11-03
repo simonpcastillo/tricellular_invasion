@@ -1,9 +1,9 @@
 # TdTomato rescue → cluster enrichment → GBM state classification
 
-**Cleaned pipeline of nine source scripts**, preserving the original statistical
-algorithms. Input/output paths and sample names are set in `config.example.json`;
-there are no user-specific paths in the executable source files. Original
-scripts are in `scripts/` with consistent names, without `(1)` suffixes.
+Nine scripts that take QC-filtered Seurat objects, establish which cells carry the
+tdTomato lineage reporter, and assign malignant transcriptional states. Every input
+and output path is passed on the command line — see the usage block at the top of
+each script — so no paths are hardcoded in the source.
 
 ## Workflow
 
@@ -105,7 +105,7 @@ classification.
   `properties.classification.name` over `properties.tdtom_label` by default
   because the latter may still contain the original GMM call.
 - **Output:** `csv_tomato_gated/<sample>_tdtomato_rescued.csv` with **exactly**
-  `cell_id,tdtom_label` when run through `run_pipeline.py`, and a separate
+  the two columns `cell_id,tdtom_label`, and a separate
   `<sample>_tdtomato_provenance.csv` recording `pos`, `pos_rescued`,
   `pos_rescued_suspect` or `neg`.
 

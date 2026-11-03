@@ -1,1 +1,32 @@
+# macOS
 .DS_Store
+
+# Data and generated output (pipelines default these roots inside the repo)
+data/
+input/
+output/
+results/
+*.rds
+*.RData
+*.h5ad
+*.mtx
+*.npz
+
+# R
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rproj
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Logs
+logs/
+*.log

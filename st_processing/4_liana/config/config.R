@@ -4,7 +4,7 @@
 if (!exists("PROJECT_ROOT")) stop("PROJECT_ROOT must be defined before sourcing config.R")
 DATA_ROOT <- Sys.getenv("LIANA_DATA_ROOT", file.path(PROJECT_ROOT, "data"))
 RESULTS_ROOT <- Sys.getenv("LIANA_RESULTS_ROOT", file.path(PROJECT_ROOT, "results"))
-PVN_RESULTS_ROOT <- Sys.getenv("PVN_OUT_ROOT", file.path(PROJECT_ROOT, "..", "pvn_pipeline", "results"))
+PVN_RESULTS_ROOT <- Sys.getenv("PVN_OUT_ROOT", file.path(PROJECT_ROOT, "..", "3_pvn", "results"))
 
 SAMPLES <- c(mouse1 = "7000_Scan2", mouse2 = "7003_Scan2")
 IN_DIR <- file.path(DATA_ROOT, "tables")
