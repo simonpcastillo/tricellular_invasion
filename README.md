@@ -216,8 +216,8 @@ bash bulk_rnaseq/run.sh check
 All data these scripts consume — both the spatial transcriptomics and the bulk
 RNA-seq — are deposited on Zenodo:
 
-> **TODO before submission — replace with the real DOI**
-> Zenodo: https://doi.org/10.5281/zenodo.XXXXXXX
+> **Available upon publication**
+> Zenodo: TBD
 
 The deposit is larger than a demo needs, so cut a small subset first. The quickest
 end-to-end check is `st_processing/1_b2c_r_qc`, which is single-sample and self-contained.
