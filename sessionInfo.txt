@@ -53,7 +53,7 @@ Other software
 ------------------------------------------------------------------------
 
   QuPath             0.7   (InstanSeg extension; model fluorescence_nuclei_and_cells-0.1.1)
-  Fiji/ImageJ        TODO  record the version used
+  Fiji/ImageJ        
 
 Python environment the code was verified against (all four entry points import and
 show --help). This is a known-good set, not necessarily the set used for the paper:
