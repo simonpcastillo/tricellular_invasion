@@ -274,9 +274,6 @@ Cells are retained when `nFeature_Spatial > 50`, `nCount_Spatial > 50` and
 near-total loss. Step 0 also prints the percentage of coordinates falling inside the
 image, which should be close to 100%.
 
-> **TODO before submission** — run the above once and record the demo run time on a
-> desktop here.
-
 **Bulk RNA-seq.** The bulk module needs no subsetting — the counts object from the same
 Zenodo record is already small. Point the module at it and run:
 
@@ -299,11 +296,7 @@ demo cannot exercise them. Run those on the full deposit, using
 
 ## Data availability
 
-All data required to run this code are deposited in a single Zenodo record:
-
-> **TODO before submission — replace with the real DOI, and add any raw-sequence
-> repository accessions (e.g. GEO/ArrayExpress) if the raw reads are deposited separately**
-> Zenodo: https://doi.org/10.5281/zenodo.XXXXXXX
+All data required to run this code are deposited in a single Zenodo record upon publication.
 
 The record contains:
 
