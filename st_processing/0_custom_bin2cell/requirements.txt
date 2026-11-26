@@ -1,8 +1,8 @@
 # bin2cell segmentation replacement pipeline
 # Install with: pip install -r requirements.txt
 #
-# bin2cell may not be on PyPI — install from GitHub if needed:
-# pip install git+https://github.com/BIMSBbioinfo/bin2cell.git
+# bin2cell is on PyPI (verified with 0.3.5). Upstream source:
+# https://github.com/Teichlab/bin2cell
  
 numpy
 pandas

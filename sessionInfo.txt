@@ -1,0 +1,73 @@
+Environment record for github.com/simonpcastillo/tricellular_invasion
+Regenerate with: Rscript tools/record_environment.R
+Recorded: 2026-11-26
+
+------------------------------------------------------------------------
+R
+------------------------------------------------------------------------
+
+R version 4.6.0 (2026-04-24)
+Platform: aarch64-apple-darwin23
+Running under: macOS 27.2.1
+
+Package versions used by this repository:
+
+  AnnotationDbi      1.74.0
+  cluster            2.1.8.3
+  data.table         1.18.6.1
+  dplyr              1.2.1
+  edgeR              4.10.5
+  fgsea              1.38.0
+  future             1.75.0
+  ggh4x              0.3.1
+  ggnewscale         0.5.2
+  ggplot2            4.0.3
+  ggrepel            0.9.8
+  GO.db              3.23.1
+  homologene         1.4.68.19.3.27
+  jsonlite           2.0.0
+  liana              0.1.14
+  limma              3.68.5
+  Matrix             1.7.6
+  mclust             6.1.3
+  optparse           not installed
+  org.Mm.eg.db       3.23.0
+  patchwork          1.3.2
+  png                0.1.9
+  purrr              1.2.2
+  RANN               2.6.3
+  RcppML             0.3.7.1
+  readr              2.2.0
+  scales             1.4.0
+  scattermore        1.2
+  Seurat             5.5.1
+  SeuratObject       5.4.0
+  spatstat.geom      3.8.2
+  stringr            1.6.0
+  svglite            2.2.2
+  tibble             3.3.1
+  tidyr              1.3.2
+
+------------------------------------------------------------------------
+Other software
+------------------------------------------------------------------------
+
+  QuPath             0.7   (InstanSeg extension; model fluorescence_nuclei_and_cells-0.1.1)
+  Fiji/ImageJ        TODO  record the version used
+
+Python environment the code was verified against (all four entry points import and
+show --help). This is a known-good set, not necessarily the set used for the paper:
+
+  Python             3.11.18
+  numpy              2.4.6
+  pandas             2.3.3      (scanpy constrains pandas to 2.x)
+  scipy              1.17.1
+  scikit-learn       1.9.1
+  matplotlib         3.11.2
+  scikit-image       0.26.0
+  shapely            2.2.0
+  tifffile           2026.3.3
+  imagecodecs        2026.3.6
+  scanpy             1.11.5
+  anndata            0.12.19
+  bin2cell           0.3.5

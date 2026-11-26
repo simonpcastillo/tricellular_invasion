@@ -104,16 +104,18 @@ This is a collection of analysis scripts, not a packaged application. Each modul
 independently; install only what the stages you intend to run require.
 
 **Operating systems.** All scripts are plain R, Python, Groovy and ImageJ macro code with
-no platform-specific calls. The R environment recorded below is macOS 14 on Apple Silicon
-(`aarch64-apple-darwin23`); the longer-running stages were also run on a Linux HPC cluster.
-Not tested on Windows.
+no platform-specific calls. The recorded R environment is macOS 27.2.1 on Apple Silicon
+(R built for `aarch64-apple-darwin23`); the longer-running stages were also run on a Linux
+HPC cluster. Not tested on Windows.
 
 **No non-standard hardware is required** — no GPU, and nothing beyond a desktop or a
 standard HPC node. Memory is the practical limit: the Visium HD stages
 (`st_processing/1`–`4`) hold whole-section Seurat objects in memory and need substantially
 more than the other modules. `bulk_rnaseq` is single-threaded and was run with 32 GB.
 
-**R 4.6.0** (`aarch64-apple-darwin23`). Versions used:
+**R 4.6.0** (`aarch64-apple-darwin23`). The full record, including anything not
+installed on the recording machine, is in [sessionInfo.txt](sessionInfo.txt); regenerate it
+with `Rscript tools/record_environment.R`. Versions used:
 
 | Package | Version | | Package | Version |
 |---|---|---|---|---|
@@ -137,7 +139,21 @@ more than the other modules. `bulk_rnaseq` is single-threaded and was run with 3
 | RcppML | 0.3.7.1 (optional; PCA fallback) | | | |
 
 **Python 3** for `st_processing/0` and the two Python stages of `st_processing/2`.
-Package names are in the per-module `requirements.txt`; see *Installation* below.
+The code was verified to install and load under **Python 3.11.18** with:
+
+| Package | Version | | Package | Version |
+|---|---|---|---|---|
+| numpy | 2.4.6 | | scikit-image | 0.26.0 |
+| pandas | 2.3.3 | | shapely | 2.2.0 |
+| scipy | 1.17.1 | | tifffile | 2026.3.3 |
+| scikit-learn | 1.9.1 | | imagecodecs | 2026.3.6 |
+| matplotlib | 3.11.2 | | scanpy | 1.11.5 |
+| anndata | 0.12.19 | | bin2cell | 0.3.5 |
+
+All four Python entry points (`run_bin2cell_customseg.py`, `2a3_rescue.py`,
+`2a4_make_tdtomato_rescued_csv.py`, `2b4_tdtom_tumourlike_score.py`) were confirmed to
+import and show their command-line help under this set. Note that `scanpy` constrains
+`pandas` to the 2.x series.
 
 **QuPath v0.7** with the **InstanSeg** extension and the
 `fluorescence_nuclei_and_cells-0.1.1` model, for `if_processing/if_bulk_margin_segmentation/`.
@@ -175,8 +191,17 @@ pip install -r st_processing/2_tdtom_rescue_cell_classification/requirements.txt
 QuPath and Fiji are installed from their own distributions; the InstanSeg model is
 downloaded from inside QuPath via *Extensions > InstanSeg*.
 
-Install time on a desktop depends almost entirely on whether CRAN/Bioconductor binaries
-are available for your platform or the packages are built from source.
+**Install time.** Measured on the recorded macOS/Apple-Silicon machine with pre-built
+binaries: installing the 32 named R packages took **~25 s** (7 s CRAN, 18 s Bioconductor)
+and ~640 MB, with their dependencies already present. A first-time install on a machine
+with no R packages pulls **143 packages** in total (32 named plus 111 recursive
+dependencies); in the same conditions that completed in well under two minutes.
+
+Install time depends almost entirely on whether binaries exist for your platform. Where
+they do not — commonly on Linux, where CRAN serves source for most packages — Seurat and
+the Bioconductor annotation packages are compiled locally and the install takes
+considerably longer. Time it on your target platform rather than relying on the figure
+above. The Python packages install in a few minutes from wheels.
 
 Before running a configured module, use its preflight to confirm the environment:
 
